@@ -4,6 +4,35 @@ Convert various broken CSV formats from systems like Venmo into something Actual
 
 
 
+# Fidelity HSA
+
+See `samples/sample_fidelity_hsa_export.csv` for an example.
+
+The export files from Fidelity have several annoyances that we need to correct:
+
+1. Everything is in all-uppercase (like the world still runs on COBOL...)
+2. A description value of "No Description" means there shouldn't be anything in the cell
+3. There's blank lines at the top for no good reason
+4. There's a large block of text below the actual data that's human instructions and disclaimers
+5. There are non-ASCII, unprintable characters in some rows ("Wegmans" below)
+6. It puts "`(cash)`" at the end of `Action` values when there's already a `Type` column to cover that
+
+
+Sample input data (with useless lines removed):
+
+```csv
+Run Date,Action,Symbol,Description,Type,Price ($),Quantity,Commission ($),Fees ($),Accrued Interest ($),Amount ($),Cash Balance ($),Settlement Date
+05/28/2026,"DEBIT CARD PURCHASE WEGMANS #007 (Cash)",,"No Description",Cash,,0.000,,,,-12,388.76,
+```
+
+What this is turned into:
+
+| Date       | Payee                           | Notes | Amount
+| ---------- | ------------------------------- | ----- | ------------------
+| 05/28/2026 | Debit card purchase wegmans 007 |       | -12
+
+
+
 # Venmo
 
 See `samples/sample_venmo_export.csv` for an example.
